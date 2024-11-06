@@ -6,8 +6,11 @@ click==8.1.7
 dnspython==2.7.0
 email_validator==2.2.0
 fastapi==0.115.4
+gunicorn==23.0.0
 h11==0.14.0
 idna==3.10
+packaging==24.1
+psycopg2==2.9.10
 pydantic==2.9.2
 pydantic-settings==2.6.0
 pydantic_core==2.23.4
