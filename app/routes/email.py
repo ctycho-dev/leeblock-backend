@@ -7,7 +7,7 @@ from fastapi import Response, status, HTTPException, Depends, APIRouter
 
 from app.config import settings
 
-from app.schemas import EmailCallbackIn
+from app.schemas import EmailIn
 
 router = APIRouter(tags=['Email'])
 
@@ -45,35 +45,17 @@ def send_email(
     return 200
 
 
-@router.post('/v1/email_callback')
-async def email_callback(data: EmailCallbackIn):
+@router.post('/v1/send_email')
+async def email_callback(data: EmailIn):
     """Send an email."""
-
-    body = """
-    <style>
-        .btn-link {
-        text-decoration: underline;
-        color: #0069c2;
-        }
-        .title {
-            margin-bottom: 10px;
-        }
-        .block {
-            margin-bottom: 3px;
-        }
-    </style>
-    <h3 class="title">Запрос на обратный звонок.</h3>
-    <div class="block">Имя: %s</div>
-    <div>Телефон: <a href="tel:%s">%s</a></div>
-    """ % (data.name, data.phone, data.phone)
 
     status_code = send_email(
         settings.email_from,
         settings.email_pwd,
         settings.email_to,
-        "Обратный звонок",
-        body,
-        'html'
+        data.subject,
+        data.body,
+        data.msg_type
     )
 
     if status_code != 200:

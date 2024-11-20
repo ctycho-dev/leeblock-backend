@@ -7,7 +7,7 @@ import uvicorn
 
 from app import models
 from app.database import engine
-from app.routes import cdek, email
+from app.routes import cdek, email, db
 
 # creates database by pydantic, but we use alembic instead now
 models.Base.metadata.create_all(bind=engine)
@@ -38,6 +38,7 @@ async def root():
 
 app.include_router(cdek.router)
 app.include_router(email.router)
+app.include_router(db.router)
 
 
 def main():
