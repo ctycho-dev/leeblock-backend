@@ -204,8 +204,13 @@ def get_cities(
     _: dict = Depends(get_token)
 ):
     """Get cities from database."""
-
-    cities = db.query(models.Cities).all()
+    try:
+        cities = db.query(models.Cities).all()
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error: {exc}"
+            ) from exc
 
     return cities
 
