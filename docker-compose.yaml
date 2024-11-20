@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  web:
+    image: leeblock_fastapi  # Specify the image name (if you're building this image locally)
+    build: .  # This will build the image from the Dockerfile in the current directory
+    restart: always
+    env_file:
+      - .env  # This will load environment variables from the .env file
+    ports:
+      - "8000:8000"
+    

@@ -46,7 +46,7 @@ def main():
     rc = 0
 
     try:
-        uvicorn.run(app, port=5000)
+        uvicorn.run(app, host='0.0.0.0', port=8000)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         print(f'Error: {exc}')
         rc = -1
