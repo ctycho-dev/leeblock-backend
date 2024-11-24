@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Start PHP-FPM in the background
-pip3 install .
+source .venv/bin/activate
 
-# Start Nginx in the foreground
-onekey-start
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app

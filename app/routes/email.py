@@ -48,7 +48,6 @@ def send_email(
 @router.post('/v1/send_email')
 async def email_callback(data: EmailIn):
     """Send an email."""
-    print(data)
 
     status_code = send_email(
         settings.email_from,

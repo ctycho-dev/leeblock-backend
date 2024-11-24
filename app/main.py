@@ -1,9 +1,11 @@
 """ FastAPI """
-
+import os
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import time
+import asyncio
 
 from app import models
 from app.database import engine
@@ -17,7 +19,7 @@ app = FastAPI()
 origins = [
     "https://leeblock.ru",
     "https://wwww.leeblock.ru",
-    # "http://localhost:3000",
+    "http://localhost:3000",
     # "http://localhost:8080",
 ]
 
@@ -33,6 +35,7 @@ app.add_middleware(
 @app.get("/")
 async def root():
     """Root"""
+    time.sleep(10)
     return {"message": "Hello World"}
 
 
@@ -46,7 +49,8 @@ def main():
     rc = 0
 
     try:
-        uvicorn.run(app, host='0.0.0.0', port=8000)
+        if os.getenv('MODE') != 'prod':
+            uvicorn.run(app, host='0.0.0.0', port=8000)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         print(f'Error: {exc}')
         rc = -1
@@ -55,4 +59,5 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    # sys.exit(main())
+    asyncio.run(main())

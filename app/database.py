@@ -16,7 +16,11 @@ DB_URL: list = [
 
 SQLALCHEMY_DATABASE_URL = "".join(DB_URL)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True,          # Checks if connection is alive
+    pool_recycle=1800            # Recycles connections every 30 minutes
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -205,7 +205,7 @@ def get_cities(
 ):
     """Get cities from database."""
     try:
-        cities = db.query(models.Cities).all()
+        cities = db.query(models.Cities).order_by(models.Cities.sequence).all()
     except Exception as exc:
         raise HTTPException(
             status_code=500,
