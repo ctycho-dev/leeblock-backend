@@ -1,9 +1,9 @@
 #!/bin/sh
 
-docker-copmose down
+docker-compose down
 
 git pull origin main
 
-dcoker build . -t leeblock_fastapi
+docker build . -t leeblock_fastapi
 
-docker-copmose up -d
+docker-compose up -d
