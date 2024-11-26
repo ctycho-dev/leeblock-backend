@@ -32,8 +32,8 @@ def create_app() -> FastAPI:
         "https://drive-t.ru",
         "https://wwww.leeblock.ru",
         "https://wwww.drive-t.ru",
-        "http://localhost:3000",
-        "http://localhost:5123"
+        # "http://localhost:3000",
+        # "http://localhost:5123"
     ]
 
     app.add_middleware(
