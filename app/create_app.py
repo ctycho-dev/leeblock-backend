@@ -24,12 +24,14 @@ def create_app() -> FastAPI:
     """Create FastApi application."""
 
     app = FastAPI(lifespan=lifespan)
-    
+
     logger.info('Start application')
 
     origins = [
         "https://leeblock.ru",
+        "https://drive-t.ru",
         "https://wwww.leeblock.ru",
+        "https://wwww.drive-t.ru",
         "http://localhost:3000",
         "http://localhost:5123"
     ]
