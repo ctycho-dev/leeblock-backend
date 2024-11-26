@@ -8,5 +8,24 @@ services:
     env_file:
       - .env  # This will load environment variables from the .env file
     ports:
-      - "8000:8000"
-    
+      - "8000:8000"  # Expose FastAPI app on port 8000
+    depends_on:
+      - redis  # Ensure the Redis container starts before the FastAPI app
+    networks:
+      - backend-network
+    environment:
+      - REDIS_URL=redis://redis:6379  # Use Redis service name as the hostname
+
+  redis:
+    image: redis:latest  # Use the official Redis image
+    container_name: redis-server
+    restart: always
+    ports:
+      - "6379:6379"  # Expose Redis server on port 6379
+    networks:
+      - backend-network  # Ensure both containers are on the same network
+    command: ["redis-server", "--bind", "0.0.0.0"]
+
+networks:
+  backend-network:
+    driver: bridge  # Create a network to allow communication between services

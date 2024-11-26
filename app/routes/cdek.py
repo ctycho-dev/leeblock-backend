@@ -10,6 +10,8 @@ from app import models, utils
 from app.database import get_db
 from app import models
 from app.schemas import CityOut
+from app.redis_client import get_redis_client
+
 
 router = APIRouter(tags=['Authentication'])
 
@@ -201,16 +203,24 @@ def get_calculation_by_type(
 @router.get('/v1/cdek/get_cities', response_model=List[CityOut])
 def get_cities(
     db: Session = Depends(get_db),
-    _: dict = Depends(get_token)
+    rc: Session = Depends(get_redis_client)
 ):
     """Get cities from database."""
     try:
+        cached_cities = rc.get('cities_cdek')
+        if cached_cities:
+            return json.loads(cached_cities)
+
         cities = db.query(models.Cities).order_by(models.Cities.sequence).all()
+
+        product_list = [CityOut.from_orm(city).dict() for city in cities]
+
+        rc.set('cities_cdek', json.dumps(product_list), ex=86400)
     except Exception as exc:
         raise HTTPException(
             status_code=500,
-            detail=f"Error: {exc}"
-            ) from exc
+            detail=exc
+        ) from exc
 
     return cities
 
@@ -238,7 +248,6 @@ def store_cities(
         db.add_all(new_cities)
         db.commit()
 
-        # return {"data": data}
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code,
                             detail=response.reason)

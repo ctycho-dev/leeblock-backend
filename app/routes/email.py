@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from fastapi import Response, status, HTTPException, Depends, APIRouter
 
-from app.config import settings
+from app.config.config import settings
 
 from app.schemas import EmailIn
 

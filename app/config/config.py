@@ -3,6 +3,10 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    host: str
+    port: int
+    redis_host: str
+    redis_port: int
     mode: str
     db_hostname: str
     db_port: str
