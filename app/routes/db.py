@@ -1,5 +1,7 @@
 import time
-from fastapi import status, HTTPException, Depends, APIRouter
+from fastapi import status, HTTPException, Depends, APIRouter, Response, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import hashlib
 import requests
@@ -17,7 +19,9 @@ from app.config.logger import get_logger
 router = APIRouter(tags=['Database'])
 logger = get_logger()
 
-@router.get('/v1/get_products', response_model=List[ProductResponse])
+
+# @router.get('/v1/get_products', response_model=List[ProductResponse])
+@router.get('/v1/get_products')
 async def get_products(
     db: Session = Depends(get_db),
     rc: Session = Depends(get_redis_client)
@@ -37,6 +41,8 @@ async def get_products(
     try:
         cached_products = rc.get('products')
         if cached_products:
+            # json_compatible_item_data = jsonable_encoder(cached_products)
+            # return JSONResponse(content=json_compatible_item_data)
             return json.loads(cached_products)
 
         products = db.query(Products).filter(Products.published == 1).order_by(Products.sequence).all()
@@ -45,17 +51,20 @@ async def get_products(
                 status_code=404,
                 detail="No published products found."
             )
-        
+
+        # Convert products into a list of dictionaries as expected by the response model
         product_list = [ProductResponse.from_orm(product).dict() for product in products]
 
+        # Cache the list of products
         rc.set('products', json.dumps(product_list), ex=3600)
+
+        return product_list  # Return the transformed product list
     except Exception as exc:
         logger.error('/v1/get_products %s', exc)
         raise HTTPException(
             status_code=500,
             detail=exc
         ) from exc
-    return products
 
 
 @router.get('/v1/get_products/{product_id}', response_model=ProductResponse)
