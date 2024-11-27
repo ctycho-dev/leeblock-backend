@@ -41,8 +41,6 @@ async def get_products(
     try:
         cached_products = rc.get('products')
         if cached_products:
-            # json_compatible_item_data = jsonable_encoder(cached_products)
-            # return JSONResponse(content=json_compatible_item_data)
             return json.loads(cached_products)
 
         products = db.query(Products).filter(Products.published == 1).order_by(Products.sequence).all()
@@ -56,7 +54,7 @@ async def get_products(
         product_list = [ProductResponse.from_orm(product).dict() for product in products]
 
         # Cache the list of products
-        rc.set('products', json.dumps(product_list), ex=3600)
+        rc.set('products', json.dumps(product_list), ex=60)
 
         return product_list  # Return the transformed product list
     except Exception as exc:

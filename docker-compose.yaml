@@ -17,7 +17,7 @@ services:
       - REDIS_URL=redis://redis:6379  # Use Redis service name as the hostname
 
   redis:
-    image: redis:latest  # Use the official Redis image
+    image: redis:alpine3.20  # Use the official Redis image
     container_name: redis-server
     restart: always
     ports:
