@@ -17,7 +17,7 @@ async def root(rc: Session = Depends(get_redis_client)):
     value = rc.get('root')
     if not value:
         value = result
-        rc.set('root', json.dumps(result), ex=10)
+        rc.set('root', json.dumps(result), ex=60)
         return value
 
     return json.loads(value)
