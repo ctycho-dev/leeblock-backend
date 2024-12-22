@@ -31,9 +31,8 @@ def create_app() -> FastAPI:
     logger.info('Start application')
 
     origins = [
-        "https://leeblock.ru",
         "https://wwww.leeblock.ru",
-        "http://localhost:3000",
+        # "http://localhost:3000",
     ]
 
     @app.middleware("http")
