@@ -1,7 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 @dataclass
@@ -69,8 +69,7 @@ class CityOut(BaseModel):
     code: int
     name: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EmailIn(BaseModel):
@@ -112,6 +111,7 @@ class ProductResponse(BaseModel):
     product_type: Optional[str] = None
     description: str
     image: Optional[str] = None
+    images: Optional[str] = None
     catalog_img: Optional[str] = None
     catalog_hover_img: Optional[str] = None
     price: int
@@ -121,10 +121,12 @@ class ProductResponse(BaseModel):
     published: int = 0
     display_on_main: int = 0
     color: Optional[str] = None
+    weight: int
+    height: int
+    length: int
+    width: int
 
-    class Config:
-        # This enables Pydantic's ORM support
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CheckoutItems(BaseModel):
@@ -200,3 +202,26 @@ class CheckoutIn(BaseModel):
     last_name: str
     phone: str
     email: str
+
+
+class Packages(BaseModel):
+    """
+    Schema for product characteristics
+    """
+
+    weight: int
+    height: int
+    length: int
+    width: int
+
+
+class DeliveryIn(BaseModel):
+    """
+    Schema for getting tarrif of delivery
+    """
+
+    city_name: str
+    city_code: int
+    address: str
+    city_zip: str
+    packages: List[Packages]

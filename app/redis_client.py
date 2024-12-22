@@ -9,7 +9,6 @@ redis_client = Redis(host=settings.redis_host, port=settings.redis_port)
 @retry(wait=wait_fixed(2), stop=stop_after_delay(30), reraise=True)
 def connect_to_redis():
     """Ensure the Redis client can connect."""
-
     redis_client.ping()
     return redis_client
 

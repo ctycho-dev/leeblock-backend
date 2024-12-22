@@ -35,6 +35,7 @@ class Products(Base):
     product_type = Column(String(100))
     description = Column(String(500), nullable=False)
     image = Column(String(500))
+    images = Column(String)
     catalog_img = Column(String(500))
     catalog_hover_img = Column(String(500))
     price = Column(Integer, nullable=False)
@@ -43,6 +44,10 @@ class Products(Base):
     sequence = Column(Integer, nullable=False, default=100)
     published = Column(Integer, nullable=False, default=0)
     display_on_main = Column(Integer, nullable=False, default=0)
+    weight = Column(Integer, nullable=False, default=0)
+    height = Column(Integer, nullable=False, default=0)
+    length = Column(Integer, nullable=False, default=0)
+    width = Column(Integer, nullable=False, default=0)
     color = Column(String(100))
 
 

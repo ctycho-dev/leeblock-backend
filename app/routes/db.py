@@ -51,7 +51,7 @@ async def get_products(
             )
 
         # Convert products into a list of dictionaries as expected by the response model
-        product_list = [ProductResponse.from_orm(product).dict() for product in products]
+        product_list = [ProductResponse.model_validate(product).model_dump() for product in products]
 
         # Cache the list of products
         rc.set('products', json.dumps(product_list), ex=3600)
@@ -97,7 +97,10 @@ async def get_product_by_id(
                 detail=f"Product with ID '{product_id}' not found."
             )
 
-        rc.set(product_id, json.dumps(ProductResponse.from_orm(product).dict()), ex=3600)
+        product_json = ProductResponse.model_validate(product).model_dump()
+
+        rc.set(product_id, json.dumps(product_json), ex=3600)
+        return product_json
     except Exception as exc:
         logger.error('/v1/get_products/product_id %s', exc)
         raise HTTPException(
@@ -105,7 +108,6 @@ async def get_product_by_id(
             detail=exc
         ) from exc
 
-    return product
 
 
 @router.get('/v1/get_products_to_display', response_model=list[ProductResponse])
@@ -138,8 +140,9 @@ async def get_products_to_display(
                 detail="No products to display on the main page."
             )
 
-        product_list = [ProductResponse.from_orm(product).dict() for product in products]
+        product_list = [ProductResponse.model_validate(product).model_dump() for product in products]
         rc.set('products_to_display', json.dumps(product_list), ex=3600)
+        return product_list
     except Exception as exc:
         logger.error('/v1/get_products_to_display %s', exc)
         raise HTTPException(
@@ -147,7 +150,6 @@ async def get_products_to_display(
             detail=exc
         ) from exc
 
-    return products
 
 
 @router.post('/v1/init_payment')
@@ -156,7 +158,7 @@ async def init_payment(data: CheckoutIn, db: Session = Depends(get_db)):
     result = None
 
     try:
-        items = [x.dict() for x in data.Receipt.Items]
+        items = [x.model_dump() for x in data.Receipt.Items]
 
         request = Requests(
             amount=data.Amount,
@@ -196,7 +198,8 @@ async def init_payment(data: CheckoutIn, db: Session = Depends(get_db)):
 
         response = requests.post(f'{settings.tinkoff_url}/v2/Init',
                                  headers={'Content-Type': 'application/json'},
-                                 json=init_data)
+                                 json=init_data,
+                                 timeout=30)
 
         if response.status_code != 200:
             raise HTTPException(
