@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     terminal_key: str
     terminal_pwd: str
     terminal_desc: str
+    # Creds
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
 
     class Config:
         env_file = '.env'
