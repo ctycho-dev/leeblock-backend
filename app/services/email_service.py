@@ -1,5 +1,4 @@
 import ssl, smtplib
-from aiosmtplib import SMTP
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from app.core.config import settings
