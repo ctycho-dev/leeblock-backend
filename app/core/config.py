@@ -3,6 +3,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    # Frontend
+    frontend_url: str
     # FastAPI
     host: str
     port: int

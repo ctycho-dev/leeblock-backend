@@ -11,12 +11,14 @@ class UserCreate(BaseModel):
         email (EmailStr): The user's email address.
         password (str): The user's password.
     """
-    username: str
     email: EmailStr
     password: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone: Optional[str]
 
 
-class UserLogin(BaseModel):
+class UserUpdate(BaseModel):
     """
     Schema for user login credentials.
 
@@ -24,7 +26,19 @@ class UserLogin(BaseModel):
         email (EmailStr): The user's email address.
         password (str): The user's password.
     """
-    username: str
+    first_name: str | None
+    last_name: str | None
+    phone: str | None
+
+
+class UserUpdatePassword(BaseModel):
+    """
+    Schema for user login credentials.
+
+    Attributes:
+        email (EmailStr): The user's email address.
+        password (str): The user's password.
+    """
     password: str
 
 
@@ -38,8 +52,12 @@ class UserOut(BaseModel):
         created_at (datetime): The timestamp when the user was created.
     """
     id: int
-    username: str
     email: EmailStr
+    first_name: str | None
+    last_name: str | None
+    phone: str | None
+    admin: int
+    is_verified: bool
     created_at: datetime
 
     @field_serializer('created_at')

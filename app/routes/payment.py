@@ -20,6 +20,7 @@ router = APIRouter(
     prefix='/payments',
     tags=['Payment']
 )
+
 logger = get_logger()
 
 
@@ -34,17 +35,26 @@ async def init_payment(
         payment_service = PaymentService()
 
         items = [x.model_dump() for x in data.Receipt.Items]
-        request = Request(
-            amount=data.Amount,
-            bug=json.dumps(items),
-            city=data.city,
-            zip=data.zip,
-            address=data.address,
-            first_name=data.first_name,
-            last_name=data.last_name,
-            phone=data.phone,
-            email=data.email
-        )
+
+        # Create a dictionary with the required fields
+        request_data = {
+            "amount": data.Amount,
+            "bug": json.dumps(items),
+            "city": data.city,
+            "zip": data.zip,
+            "address": data.address,
+            "first_name": data.first_name,
+            "last_name": data.last_name,
+            "phone": data.phone,
+            "email": data.email,
+        }
+
+        # Add promo_code_id only if it is provided
+        if hasattr(data, 'promo_code_id') and data.promo_code_id is not None:
+            request_data["promo_code_id"] = data.promo_code_id
+
+        # Create the Request object using the dictionary
+        request = Request(**request_data)
 
         request = await request_repo.add(request)
         if not request:
@@ -68,6 +78,7 @@ async def init_payment(
             status_code=500,
             detail=f"Error: {exc}"
         ) from exc
+
 
 @router.post('v1/get_payment_status/{order_id}')
 async def get_payment_status(order_id: int, db: Session = Depends(get_db)):

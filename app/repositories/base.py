@@ -2,6 +2,7 @@ from typing import Generic, TypeVar, Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import DeclarativeMeta
+from sqlalchemy import desc
 
 T = TypeVar("T", bound=DeclarativeMeta)
 
@@ -43,8 +44,12 @@ class BaseRepository(Generic[T]):
         Returns:
             List[T]: A list of all entities.
         """
-        result = await self.session.execute(select(self.model))
+        result = await self.session.execute(
+            select(self.model).order_by(desc(self.model.created_at))
+        )
         return result.scalars().all()
+        # result = await self.session.execute(select(self.model))
+        # return result.scalars().all()
 
     async def add(self, entity: T) -> T:
         """

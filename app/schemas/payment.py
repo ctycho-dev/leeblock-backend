@@ -76,3 +76,4 @@ class CheckoutIn(BaseModel):
     last_name: str
     phone: str
     email: str
+    promo_code_id: int

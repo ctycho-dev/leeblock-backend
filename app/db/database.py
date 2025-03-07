@@ -32,7 +32,12 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def get_db():
-    """Get database session."""
+    """
+    Dependency to get an async database session.
+
+    Yields:
+        AsyncSession: An asynchronous database session.
+    """
     db = AsyncSessionLocal()
     try:
         yield db

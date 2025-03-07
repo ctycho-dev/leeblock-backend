@@ -1,4 +1,4 @@
 #!/bin/sh
 
 
-python3.12 ./app/main.py
+uvicorn app.main:app --host 127.0.0.1 --port 8000 

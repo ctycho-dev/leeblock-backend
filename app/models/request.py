@@ -1,6 +1,6 @@
 """Requests realted models."""
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from app.db.database import Base
@@ -22,6 +22,10 @@ class Request(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default='NEW')
     payment_id: Mapped[str | None] = mapped_column(String(255))
     token: Mapped[str | None] = mapped_column(String(255))
+    promo_code_id: Mapped[int | None] = mapped_column(Integer, ForeignKey('promo_codes.id'), nullable=True)
     created_at: Mapped[str] = mapped_column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text('now()')
     )
+
+    # Relationship to PromoCode
+    promo_code: Mapped["PromoCode"] = relationship("PromoCode", back_populates="requests")

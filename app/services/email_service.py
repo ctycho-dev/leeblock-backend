@@ -13,6 +13,8 @@ class EmailService:
     def __init__(self):
         self.smtp_server = "smtp.gmail.com"
         self.smtp_port = 587
+        # self.smtp_server = "smtp.yandex.com"
+        # self.smtp_port = 465
         self.email_from = settings.email_from
         self.email_pwd = settings.email_pwd
 
@@ -34,35 +36,3 @@ class EmailService:
         except Exception as exc:
             logger.error("Failed to send email to %s: %s", email_to, exc)
             return 500
-
-    # async def send_email(self, email_to, subject, body, body_type="plain"):
-    #     """Send an email securely using SMTP with proper SSL/TLS handling."""
-    #     # Create the email message
-    #     message = MIMEMultipart()
-    #     message["From"] = self.email_from
-    #     message["To"] = email_to
-    #     message["Subject"] = subject
-    #     message.attach(MIMEText(body, body_type))
-
-    #     try:
-    #         # Use a secure SSL context
-    #         ssl_context = ssl.create_default_context()
-
-    #         # Connect to the SMTP server asynchronously
-    #         async with SMTP(
-    #             hostname=self.smtp_server,
-    #             port=self.smtp_port,
-    #             use_tls=False,  # For StartTLS
-    #             tls_context=ssl_context,
-    #         ) as server:
-    #             # Initiate StartTLS
-    #             await server.starttls()
-    #             # Authenticate with the SMTP server
-    #             await server.login(self.email_from, self.email_pwd)
-    #             # Send the email
-    #             await server.send_message(message)
-
-    #         return 200
-    #     except Exception as exc:
-    #         logger.error("Failed to send email to %s: %s", email_to, exc)
-    #         return 500

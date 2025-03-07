@@ -13,6 +13,17 @@ class UserRepository(BaseRepository[User]):
     def __init__(self, session):
         super().__init__(session, User)
 
+    async def get_all_non_admin_users(self) -> list[User]:
+        """
+        Retrieve all users where admin is 0.
+
+        Returns:
+            List[T]: A list of all non-admin users.
+        """
+        query = select(self.model).where(self.model.admin == 0)
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
     async def create_user(self, entity: UserCreate) -> User:
         """
         Create a new user.
@@ -23,11 +34,10 @@ class UserRepository(BaseRepository[User]):
         Returns:
             User: The created user entity.
         """
-        # Check if the user already exists
-        existing_user = await self.session.execute(select(User).filter_by(username=entity.username))
+        existing_user = await self.session.execute(select(User).filter_by(email=entity.email))
         existing_user = existing_user.scalars().first()
         if existing_user:
-            raise ValueError(f"User with username {entity.username} already exists.")
+            raise ValueError(f"User with username {entity.email} already exists.")
 
         # Hash the password before storing
         hashed_password = oauth2.hash_pwd(entity.password)
@@ -40,17 +50,28 @@ class UserRepository(BaseRepository[User]):
 
         return new_user
 
-    async def get_by_username(self, username: str) -> Optional[User]:
+    async def verify_user(self, email):
         """
-        Retrieve a user by its username.
+        """
+        result = await self.session.execute(select(User).where(User.email == email))
+        db_kol = result.scalars().first()
+        if not db_kol:
+            raise ValueError("User not found")
+
+        db_kol.is_verified = True
+        await self.session.commit()
+    
+    async def get_by_email(self, email: str) -> Optional[User]:
+        """
+        Retrieve a user by its email.
 
         Args:
-            username (str): The username of the user.
+            email (str): The email of the user.
 
         Returns:
             Optional[User]: The user entity if found, otherwise None.
         """
-        result = await self.session.execute(select(User).filter_by(username=username))
+        result = await self.session.execute(select(User).filter_by(email=email))
         user = result.scalars().first()
 
         return user

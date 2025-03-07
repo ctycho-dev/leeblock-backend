@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
 
 from app.services.email_service import EmailService
-from app.repositories.user_repository import UserRepository
+from app.repositories.user_repo import UserRepository
 from app.repositories.token_repository import TokenRepository
 from app.dependencies.factory import DependencyFactory
 from app.schemas.users import UserOut
@@ -44,25 +44,36 @@ async def get_current_user(
 ):
     """Get current user from token with caching."""
     
-    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail='Could not validate credentials',
-                                          headers={"WWW-Authenticate": "Bearer"})
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    # not_verified = HTTPException(
+    #     status_code=status.HTTP_401_UNAUTHORIZED,
+    #     detail="User not verified.",
+    #     headers={"WWW-Authenticate": "Bearer"},
+    # )
+
     token_data = verify_access_token(token, credentials_exception)
 
     user_id = token_data.id
     cache_key = f"user:{user_id}"
 
-    cached_user = await factory.cache.get(cache_key)
-    if cached_user:
-        return json.loads(cached_user)
+    # cached_user = await factory.cache.get(cache_key)
+    # if cached_user:
+    #     return json.loads(cached_user)
 
     user_repo = UserRepository(factory.db)
     user = await user_repo.get_by_id(user_id)
 
     if not user:
-        raise credentials_exception  # If user is not found, raise exception
+        raise credentials_exception
+    # if not user.is_verified:
+    #     raise not_verified
 
-    user_json = UserOut.model_validate(user).model_dump()
-    await factory.cache.set(cache_key, json.dumps(user_json), ex=CACHE_TTL)
+    # user_json = UserOut.model_validate(user).model_dump()
+    # await factory.cache.set(cache_key, json.dumps(user_json), ex=CACHE_TTL)
 
     return user
