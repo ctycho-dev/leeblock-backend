@@ -1,20 +1,20 @@
 version: "3.8"
 
 services:
-  # web:
-  #   image: leeblock_fastapi  # Specify the image name (if you're building this image locally)
-  #   build: .  # This will build the image from the Dockerfile in the current directory
-  #   restart: always
-  #   env_file:
-  #     - .env  # This will load environment variables from the .env file
-  #   ports:
-  #     - "8000:8000"  # Expose FastAPI app on port 8000
-  #   depends_on:
-  #     - redis  # Ensure the Redis container starts before the FastAPI app
-  #   networks:
-  #     - backend-network
-  #   environment:
-  #     - REDIS_URL=redis://redis:6379  # Use Redis service name as the hostname
+  web:
+    image: leeblock_fastapi  # Specify the image name (if you're building this image locally)
+    build: .  # This will build the image from the Dockerfile in the current directory
+    restart: always
+    env_file:
+      - .env  # This will load environment variables from the .env file
+    ports:
+      - "8000:8000"  # Expose FastAPI app on port 8000
+    depends_on:
+      - redis  # Ensure the Redis container starts before the FastAPI app
+    networks:
+      - backend-network
+    environment:
+      - REDIS_URL=redis://redis:6379  # Use Redis service name as the hostname
 
   redis:
     image: redis:alpine3.20
